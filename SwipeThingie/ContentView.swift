@@ -15,12 +15,11 @@ struct MapSnapshot: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: MKMapView, context: Context) {
-        
+        uiView.isScrollEnabled = false
     }
 }
 
-struct ContentView: View {
-    
+struct Cell: View {
     var roundedRect: RoundedRectangle {
         RoundedRectangle(cornerRadius: 10)
     }
@@ -29,6 +28,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Image(systemName: "gear")
+                    .imageScale(.large)
                 VStack(alignment: .leading) {
                     Text("Title")
                     Text("Subbbbbb")
@@ -39,8 +39,20 @@ struct ContentView: View {
         }
         .aspectRatio(contentMode: .fit)
         .mask(roundedRect)
-        .overlay(roundedRect.stroke(Color.secondary, lineWidth: 5))
+        .overlay(roundedRect.stroke(Color(.systemGray5), lineWidth: 2))
         .padding()
+    }
+}
+
+struct ContentView: View {
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                Cell()
+                Cell()
+                Cell()
+            }
+        }
     }
 }
 
