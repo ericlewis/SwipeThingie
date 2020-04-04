@@ -20,27 +20,57 @@ struct MapSnapshot: UIViewRepresentable {
 }
 
 struct Cell: View {
+    @State var offset: CGFloat = 0
+
     var roundedRect: RoundedRectangle {
         RoundedRectangle(cornerRadius: 10)
     }
     
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Image(systemName: "gear")
-                    .imageScale(.large)
-                VStack(alignment: .leading) {
-                    Text("Title")
-                    Text("Subbbbbb")
-                }
+    var drag: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                if value.translation.width > 0 { return }
+                withAnimation { self.offset = value.translation.width }
             }
-            .padding()
-            MapSnapshot()
+            .onEnded { _ in withAnimation { self.offset = 0 } }
+    }
+    
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            if self.offset < 0 {
+                HStack {
+                    Image(systemName: "gear")
+                        .padding()
+                    Image(systemName: "gear")
+                        .padding()
+                    Image(systemName: "gear")
+                        .padding()
+                }
+                .transition(.scale)
+            }
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Image(systemName: "gear")
+                        .foregroundColor(.white)
+                        .imageScale(.large)
+                        .padding()
+                        .background(Circle().fill(Color.secondary))
+                    VStack(alignment: .leading) {
+                        Text("Title")
+                        Text("Subbbbbb")
+                            .font(.subheadline)
+                    }
+                }
+                .padding()
+                MapSnapshot()
+            }
+            .aspectRatio(contentMode: .fit)
+            .mask(roundedRect)
+            .overlay(roundedRect.stroke(Color(.systemGray5), lineWidth: 2))
+            .offset(x: self.offset)
+            .gesture(drag)
         }
-        .aspectRatio(contentMode: .fit)
-        .mask(roundedRect)
-        .overlay(roundedRect.stroke(Color(.systemGray5), lineWidth: 2))
-        .padding()
+        .padding([.horizontal, .bottom])
     }
 }
 
